@@ -1,0 +1,411 @@
+# Lab - Getting Familiar with the Linux Shell
+
+## 📌 Overview
+
+This lab introduces the fundamentals of the **Linux command line and shell**. It covers navigating the filesystem, creating and managing directories, redirecting command output, working with hidden files, and performing basic file operations such as copying, deleting, and moving files.
+
+The lab was completed using the **CyberOps Workstation virtual machine**.
+
+---
+
+## 🎯 Objectives
+
+- Understand the Linux shell and command-line environment.
+- Use `man` pages to learn about Linux commands.
+- Navigate the filesystem using absolute and relative paths.
+- Create and manage directories.
+- Redirect command output to files.
+- Append data to existing files.
+- Identify and work with hidden files.
+- Copy, delete, and move files and directories.
+- Understand the advantages of using the Linux command line.
+
+---
+
+## 🖥️ Part 1 — Shell Basics
+
+### Accessing the Command Line
+
+The **shell** is Linux's command interpreter and provides a powerful way to interact with the operating system through the terminal.
+
+Example prompt:
+
+```bash
+[analyst@secOps ~]$
+```
+
+### Using Manual Pages
+
+Linux provides built-in documentation through the `man` command.
+
+```bash
+man man
+man cp
+man pwd
+man ls
+```
+
+To exit a manual page:
+
+```text
+q
+```
+
+Common sections found in a manual page include:
+
+- **Name**
+- **Synopsis**
+- **Description**
+- **Options**
+- **Exit status**
+- **Return value**
+- **Errors**
+- **Environment**
+- **Files**
+- **Examples**
+- **Authors**
+- **See also**
+
+The `cp` command is used to copy files, while `pwd` displays the current working directory.
+
+---
+
+### Creating and Navigating Directories
+
+Check the current directory:
+
+```bash
+pwd
+```
+
+Example:
+
+```text
+/home/analyst
+```
+
+Change directories:
+
+```bash
+cd /home/analyst
+```
+
+List directory contents:
+
+```bash
+ls -l
+```
+
+Create directories:
+
+```bash
+mkdir cyops_folder1
+mkdir cyops_folder2
+mkdir cyops_folder3
+```
+
+Navigate into a directory:
+
+```bash
+cd /home/analyst/cyops_folder3
+```
+
+The `~` symbol represents the current user's home directory:
+
+```bash
+cd ~
+```
+
+The `$` prompt indicates a regular user, while `#` indicates elevated/root privileges.
+
+---
+
+## 📂 Absolute and Relative Paths
+
+### Absolute Path
+
+An **absolute path** starts from the root directory `/`.
+
+```text
+/home/analyst/cyops_folder3
+```
+
+### Relative Path
+
+A **relative path** is based on the current working directory.
+
+Linux uses:
+
+```text
+.   → Current directory
+..  → Parent directory
+```
+
+Examples:
+
+```bash
+cd .
+cd ..
+```
+
+`cd .` keeps you in the current directory, while `cd ..` moves one level up.
+
+---
+
+## 🔀 Output Redirection
+
+The `>` operator redirects command output from the terminal into a file.
+
+```bash
+echo This is a message echoed to the terminal by echo. > some_text_file.txt
+```
+
+If the file does not exist, it is created automatically.
+
+View the file:
+
+```bash
+cat some_text_file.txt
+```
+
+### Important
+
+Using `>` on an existing file **overwrites its contents**.
+
+```bash
+echo New message > some_text_file.txt
+```
+
+The previous contents are replaced by the new output.
+
+---
+
+## ➕ Append Output with `>>`
+
+The `>>` operator adds output to the end of an existing file without removing its current contents.
+
+```bash
+echo This is another line of text. >> some_text_file.txt
+```
+
+View the result:
+
+```bash
+cat some_text_file.txt
+```
+
+| Operator | Function |
+|---|---|
+| `>` | Create/overwrite a file |
+| `>>` | Append to a file |
+
+---
+
+## 👻 Hidden Files
+
+Linux files beginning with `.` are hidden by default.
+
+Examples:
+
+```text
+.config
+.bash_history
+.xinitrc
+```
+
+Normal listing:
+
+```bash
+ls -l
+```
+
+List all files, including hidden files:
+
+```bash
+ls -la
+```
+
+The `-a` option tells `ls` to display all files, including hidden files.
+
+---
+
+# 📦 Part 2 — Copying, Deleting, and Moving Files
+
+## Copying Files
+
+The `cp` command creates a copy of a file while keeping the original.
+
+```bash
+cp <source> <destination>
+```
+
+Example:
+
+```bash
+cp some_text_file.txt cyops_folder2/
+```
+
+Source:
+
+```text
+/home/analyst/some_text_file.txt
+```
+
+Destination:
+
+```text
+/home/analyst/cyops_folder2/some_text_file.txt
+```
+
+Verify:
+
+```bash
+ls cyops_folder2/
+```
+
+---
+
+## Deleting Files
+
+The `rm` command removes files.
+
+```bash
+rm some_text_file.txt
+```
+
+To remove a directory and its contents, use the recursive `-r` option:
+
+```bash
+rm -r cyops_folder1
+```
+
+> ⚠️ **Warning:** `rm -r` removes the directory and the files/subdirectories inside it.
+
+---
+
+## Moving Files
+
+The `mv` command moves a file from one location to another.
+
+```bash
+mv cyops_folder2/some_text_file.txt .
+```
+
+The `.` represents the current directory.
+
+Unlike `cp`, moving the file removes it from its original location.
+
+---
+
+# 🧠 Key Commands
+
+| Command | Purpose |
+|---|---|
+| `man` | Display command documentation |
+| `pwd` | Display current working directory |
+| `ls` | List files and directories |
+| `ls -l` | Detailed directory listing |
+| `ls -la` | Detailed listing including hidden files |
+| `cd` | Change directory |
+| `cd ~` | Go to home directory |
+| `cd ..` | Move to parent directory |
+| `mkdir` | Create a directory |
+| `echo` | Display text |
+| `cat` | Display file contents |
+| `cp` | Copy files |
+| `mv` | Move files |
+| `rm` | Delete files |
+| `rm -r` | Recursively delete directories |
+| `>` | Redirect/overwrite output |
+| `>>` | Redirect/append output |
+
+---
+
+# ❓ Lab Questions & Answers
+
+### What is the current directory?
+
+```text
+/home/analyst
+```
+
+The exact directory can vary depending on the current location.
+
+### What happens when using `cd ~`?
+
+The shell changes to the current user's home directory because `~` represents the user's home directory.
+
+### What happens when using `cd .`?
+
+Nothing visibly changes because `.` refers to the current directory.
+
+### What happens when using `cd ..`?
+
+The shell moves to the parent directory.
+
+For example:
+
+```text
+/home/analyst/cyops_folder3
+        ↓
+/home/analyst
+```
+
+### What happens when using `>`?
+
+The command output is redirected to a file. If the file already exists, its previous contents are overwritten.
+
+### What happens when using `>>`?
+
+The output is appended to the end of the file while preserving its existing contents.
+
+### Can directories be hidden?
+
+Yes. Directories whose names begin with `.` are hidden and can be displayed using:
+
+```bash
+ls -la
+```
+
+---
+
+# 🔐 Cybersecurity Relevance
+
+Understanding the Linux shell is fundamental for cybersecurity work.
+
+Command-line skills are particularly useful for:
+
+- **Linux system administration**
+- **Security operations**
+- **Incident response**
+- **Digital forensics**
+- **Remote administration**
+- **File and directory analysis**
+- **Automation and scripting**
+- **CTF environments**
+
+The command line provides more control and can be combined into scripts to automate routine tasks. It also uses fewer resources when administering systems remotely.
+
+---
+
+# 📝 Key Takeaways
+
+- The Linux shell provides direct interaction with the operating system.
+- `man` provides built-in documentation for commands.
+- `pwd`, `cd`, and `ls` are fundamental filesystem navigation commands.
+- `.` represents the current directory and `..` represents the parent directory.
+- Absolute paths start from `/`, while relative paths depend on the current directory.
+- `>` overwrites redirected output, while `>>` appends it.
+- Hidden files begin with `.` and can be viewed using `ls -la`.
+- `cp` copies files while preserving the original.
+- `mv` moves files and removes them from their original location.
+- `rm` deletes files, while `rm -r` can recursively delete directories.
+- Linux command-line knowledge is an important foundation for cybersecurity operations.
+
+---
+
+## 📚 Source
+
+**Cisco Networking Academy — Lab: Getting Familiar with the Linux Shell**
+
+**Cisco CyberOps Workstation Lab**
