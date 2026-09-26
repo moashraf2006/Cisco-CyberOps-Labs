@@ -2,7 +2,7 @@
 
 ## 📌 Overview
 
-This lab introduces the fundamentals of the Linux command line and shell. It covers navigating the filesystem, creating and managing directories, redirecting command output, working with hidden files, and performing basic file operations such as copying, deleting, and moving files.
+This lab introduces the fundamentals of the **Linux command line and shell**. It covers navigating the filesystem, creating and managing directories, redirecting command output, working with hidden files, and performing basic file operations such as copying, deleting, and moving files.
 
 The lab was completed using the **CyberOps Workstation virtual machine**.
 
@@ -24,7 +24,7 @@ The lab was completed using the **CyberOps Workstation virtual machine**.
 
 ## 🖥️ Part 1 — Shell Basics
 
-### 1. Accessing the Command Line
+### Accessing the Command Line
 
 The **shell** is Linux's command interpreter and provides a powerful way to interact with the operating system through the terminal.
 
@@ -34,40 +34,16 @@ Example prompt:
 [analyst@secOps ~]$
 ```
 
-The lab uses the `analyst` account on the CyberOps Workstation.
-
----
-
-### 2. Using Manual Pages
+### Using Manual Pages
 
 Linux provides built-in documentation through the `man` command.
 
 ```bash
 man man
-```
-
-Example:
-
-```bash
 man cp
 man pwd
 man ls
 ```
-
-Common sections found in a manual page include:
-
-* Name
-* Synopsis
-* Description
-* Options
-* Exit status
-* Return value
-* Errors
-* Environment
-* Files
-* Examples
-* Authors
-* See also
 
 To exit a manual page:
 
@@ -75,11 +51,26 @@ To exit a manual page:
 q
 ```
 
+Common sections found in a manual page include:
+
+* **Name**
+* **Synopsis**
+* **Description**
+* **Options**
+* **Exit status**
+* **Return value**
+* **Errors**
+* **Environment**
+* **Files**
+* **Examples**
+* **Authors**
+* **See also**
+
 The `cp` command is used to copy files, while `pwd` displays the current working directory.
 
 ---
 
-### 3. Navigating Directories
+### Creating and Navigating Directories
 
 Check the current directory:
 
@@ -119,23 +110,19 @@ Navigate into a directory:
 cd /home/analyst/cyops_folder3
 ```
 
-The `~` symbol represents the current user's home directory.
+The `~` symbol represents the current user's home directory:
 
 ```bash
 cd ~
 ```
 
-The `$` prompt indicates a regular user, while `#` indicates elevated/root privileges.
+## The `$` prompt indicates a regular user, while `#` indicates elevated/root privileges.
 
----
-
-## 📂 Absolute vs Relative Paths
+## 📂 Absolute and Relative Paths
 
 ### Absolute Path
 
-An absolute path starts from the root directory `/`.
-
-Example:
+An **absolute path** starts from the root directory `/`.
 
 ```text
 /home/analyst/cyops_folder3
@@ -143,7 +130,7 @@ Example:
 
 ### Relative Path
 
-A relative path is based on the current working directory.
+A **relative path** is based on the current working directory.
 
 Linux uses:
 
@@ -159,15 +146,11 @@ cd .
 cd ..
 ```
 
-`cd .` keeps you in the current directory, while `cd ..` moves one level up.
-
----
+## `cd .` keeps you in the current directory, while `cd ..` moves one level up.
 
 ## 🔀 Output Redirection
 
 The `>` operator redirects command output from the terminal into a file.
-
-Example:
 
 ```bash
 echo This is a message echoed to the terminal by echo. > some_text_file.txt
@@ -207,8 +190,6 @@ View the result:
 cat some_text_file.txt
 ```
 
-Difference:
-
 | Operator | Function                |
 | -------- | ----------------------- |
 | `>`      | Create/overwrite a file |
@@ -246,11 +227,9 @@ The `-a` option tells `ls` to display all files, including hidden files.
 
 # 📦 Part 2 — Copying, Deleting, and Moving Files
 
-## 1. Copying Files
+## Copying Files
 
 The `cp` command creates a copy of a file while keeping the original.
-
-Syntax:
 
 ```bash
 cp <source> <destination>
@@ -262,14 +241,16 @@ Example:
 cp some_text_file.txt cyops_folder2/
 ```
 
-The source and destination in the lab are:
+Source:
 
 ```text
-Source:
- /home/analyst/some_text_file.txt
+/home/analyst/some_text_file.txt
+```
 
 Destination:
- /home/analyst/cyops_folder2/some_text_file.txt
+
+```text
+/home/analyst/cyops_folder2/some_text_file.txt
 ```
 
 Verify:
@@ -280,7 +261,7 @@ ls cyops_folder2/
 
 ---
 
-## 2. Deleting Files
+## Deleting Files
 
 The `rm` command removes files.
 
@@ -294,15 +275,13 @@ To remove a directory and its contents, use the recursive `-r` option:
 rm -r cyops_folder1
 ```
 
-⚠️ **Be careful with `rm -r`**, as it removes the directory and the files/subdirectories inside it.
+> ⚠️ **Warning:** `rm -r` removes the directory and the files/subdirectories inside it.
 
 ---
 
-## 3. Moving Files
+## Moving Files
 
 The `mv` command moves a file from one location to another.
-
-Example:
 
 ```bash
 mv cyops_folder2/some_text_file.txt .
@@ -368,10 +347,6 @@ For example:
 /home/analyst
 ```
 
-### What happens when `cd ..` is executed from `/`?
-
-The directory remains `/` because the root directory is the highest level and has no parent directory.
-
 ### What happens when using `>`?
 
 The command output is redirected to a file. If the file already exists, its previous contents are overwritten.
@@ -396,16 +371,16 @@ Understanding the Linux shell is fundamental for cybersecurity work.
 
 Command-line skills are particularly useful for:
 
-* Linux system administration
-* Security operations
-* Incident response
-* Digital forensics
-* Remote administration
-* File and directory analysis
-* Automation and scripting
-* CTF environments
+* **Linux system administration**
+* **Security operations**
+* **Incident response**
+* **Digital forensics**
+* **Remote administration**
+* **File and directory analysis**
+* **Automation and scripting**
+* **CTF environments**
 
-The lab emphasizes that command-line tools provide more control and can be combined into scripts to automate routine tasks. The command line also uses fewer resources when administering systems remotely.
+The lab highlights that command-line tools provide more control and can be combined into scripts to automate routine tasks. The command line also uses fewer resources when administering systems remotely.
 
 ---
 
@@ -427,6 +402,6 @@ The lab emphasizes that command-line tools provide more control and can be combi
 
 ## 📚 Source
 
-Cisco Networking Academy — **Lab: Getting Familiar with the Linux Shell**
+**Cisco Networking Academy — Lab: Getting Familiar with the Linux Shell**
 
-Cisco CyberOps Workstation Lab.
+**Cisco CyberOps Workstation Lab**
