@@ -1,0 +1,509 @@
+# Lab - Using Wireshark to Examine a UDP DNS Capture
+
+## 📌 Overview
+
+This lab demonstrates how **DNS** communicates over **UDP** and how to analyze DNS query and response packets using **Wireshark**.
+
+The lab covers:
+
+- Recording the VM's IP configuration.
+- Capturing DNS traffic with Wireshark.
+- Analyzing Ethernet, IPv4, UDP, and DNS headers.
+- Comparing DNS query and response packets.
+- Understanding the role of UDP port **53** in DNS communication.
+
+---
+
+## 🎯 Objectives
+
+- Record the PC's IP configuration information.
+- Capture DNS queries and responses using Wireshark.
+- Analyze captured DNS and UDP packets.
+- Identify source and destination MAC addresses.
+- Identify source and destination IP addresses.
+- Examine UDP source and destination ports.
+- Understand how DNS query and response traffic uses UDP.
+
+---
+
+## 🖥️ Required Resources
+
+- **CyberOps Workstation virtual machine**
+- **Internet access**
+
+> ⚠️ **Note:** The lab recommends obtaining permission before using a packet sniffer such as Wireshark because packet capture may be restricted by an organization's security policy.
+
+---
+
+# 🌐 Part 1 — Record the VM's IP Configuration
+
+The first part identifies the network information that will later be used during packet analysis.
+
+The example configuration provided in the lab is:
+
+| Description | Example |
+|---|---|
+| **IP Address** | `192.168.8.10` |
+| **MAC Address** | `08:00:27:82:75:df` |
+| **Default Gateway** | `192.168.8.1` |
+| **DNS Server** | `8.8.4.4` |
+
+> **Note:** Actual values vary depending on the local network and Internet connection.
+
+---
+
+## Check the Network Interface
+
+The VM should use a **Bridged Adapter**.
+
+Check the interface configuration:
+
+```bash
+ifconfig
+```
+
+If the VM does not have an IP address, the lab provides:
+
+```bash
+sudo lab.support.files/scripts/configure_as_dhcp.sh
+```
+
+Example interface:
+
+```text
+enp0s3:
+    inet 192.168.8.10
+    netmask 255.255.255.0
+    broadcast 192.168.8.255
+    ether 08:00:27:82:75:df
+```
+
+---
+
+## Find the DNS Server
+
+Use:
+
+```bash
+cat /etc/resolv.conf
+```
+
+Example:
+
+```text
+nameserver 8.8.4.4
+nameserver 209.165.200.235
+```
+
+---
+
+## Find the Default Gateway
+
+Use:
+
+```bash
+netstat -rn
+```
+
+Example:
+
+```text
+Destination     Gateway
+0.0.0.0         192.168.8.1
+192.168.8.0     0.0.0.0
+192.168.8.1     0.0.0.0
+```
+
+The default route identifies `192.168.8.1` as the default gateway in the example.
+
+> **Important:** The DNS server IP and default gateway IP are not necessarily the same. The lab notes that they may be the same in small networks but are more likely to differ in business or school networks.
+
+---
+
+# 🦈 Part 2 — Capture DNS Traffic with Wireshark
+
+Start Wireshark from the terminal:
+
+```bash
+wireshark &
+```
+
+Then:
+
+1. Select the **`enp0s3`** interface.
+2. Start the capture.
+3. Open the web browser.
+4. Navigate to:
+
+```text
+www.google.com
+```
+
+5. Stop the capture after the Google homepage loads.
+
+The browser generates a DNS query to resolve the domain name into an IP address.
+
+---
+
+# 🔎 Part 3 — Analyze DNS and UDP Packets
+
+## Step 1 — Filter DNS Traffic
+
+In Wireshark's display filter field, enter:
+
+```text
+dns
+```
+
+Then click **Apply**.
+
+Look for a packet containing:
+
+```text
+Standard query
+A www.google.com
+```
+
+If no DNS packets appear, the lab suggests closing the browser and generating DNS traffic with:
+
+```bash
+ping www.google.com
+```
+
+---
+
+# 📦 Step 2 — Analyze a DNS Query
+
+A DNS query is encapsulated through several protocol layers:
+
+```text
+Ethernet II
+     ↓
+IPv4
+     ↓
+UDP
+     ↓
+DNS
+```
+
+---
+
+## Ethernet II
+
+The Ethernet header contains:
+
+- **Source MAC address**
+- **Destination MAC address**
+
+For the DNS query:
+
+```text
+Source MAC      → VM
+Destination MAC → Default Gateway
+```
+
+The destination MAC address belongs to the default gateway because the gateway is the next device used to send the traffic outside the local network.
+
+### Question
+
+**Is the source MAC address the same as the VM's MAC address recorded in Part 1?**
+
+**Answer:** Yes.
+
+---
+
+## IPv4
+
+The example DNS query contains:
+
+```text
+Source IP      → 192.168.8.10
+Destination IP → 8.8.4.4
+```
+
+This demonstrates an important distinction:
+
+```text
+Destination IP  → DNS Server
+Destination MAC → Default Gateway
+```
+
+The packet is logically addressed to the DNS server, while the Ethernet frame is addressed to the next-hop device on the local network.
+
+---
+
+## Source and Destination
+
+| Device | IP Address | MAC Address |
+|---|---|---|
+| **Source Workstation** | `192.168.8.10` | `08:00:27:82:75:df` |
+| **Destination DNS Server / Default Gateway** | `8.8.4.4` | `00:78:cd:01:f6:50` |
+
+> The example destination IP is the DNS server, while the destination MAC address belongs to the default gateway.
+
+---
+
+# 🔢 UDP Header
+
+The UDP header contains **four fields**:
+
+| Field | Description |
+|---|---|
+| **Source Port** | Port generated by the client |
+| **Destination Port** | DNS service port |
+| **Length** | Length of the UDP segment |
+| **Checksum** | Used to check integrity |
+
+The lab example uses:
+
+```text
+Source Port      → 58029
+Destination Port → 53
+UDP Length       → 40 bytes
+```
+
+Port **53** is used by DNS.
+
+The client uses a randomly generated source port such as `58029`, while the DNS server receives the query on port `53`.
+
+---
+
+## UDP Structure
+
+```text
++-----------------------+
+|     Source Port       |
++-----------------------+
+|   Destination Port    |
++-----------------------+
+|        Length         |
++-----------------------+
+|       Checksum        |
++-----------------------+
+```
+
+Each UDP header field is **16 bits**.
+
+In the example, the UDP segment is 40 bytes:
+
+```text
+UDP Header → 8 bytes
+DNS Data   → 32 bytes
+```
+
+UDP has lower overhead than TCP because it does not include the TCP three-way handshake.
+
+---
+
+## Wireshark Query Results
+
+| Description | Example Result |
+|---|---|
+| **Frame Size** | `74 bytes` |
+| **Source MAC** | `08:00:27:82:75:df` |
+| **Destination MAC** | `00:78:cd:01:f6:50` |
+| **Source IP** | `192.168.8.10` |
+| **Destination IP** | `8.8.4.4` |
+| **Source Port** | `58029` |
+| **Destination Port** | `53` |
+
+> Actual results may vary depending on the captured traffic.
+
+---
+
+## Questions
+
+### Is the source IP address the same as the local PC's IP address?
+
+**Answer:** Yes.
+
+### Is the destination IP address the same as the default gateway?
+
+**Answer:** No.
+
+In the example:
+
+```text
+Default Gateway → 192.168.8.1
+DNS Server      → 8.8.4.4
+```
+
+---
+
+# 📥 Step 3 — Analyze the DNS Response
+
+The DNS response travels back from the DNS server to the VM.
+
+Example:
+
+```text
+Source IP      → 8.8.4.4
+Destination IP → 192.168.8.10
+```
+
+The source and destination roles are reversed compared with the original DNS query.
+
+---
+
+## Ethernet Addresses
+
+For the DNS response:
+
+```text
+Source MAC      → Default Gateway
+Destination MAC → VM
+```
+
+---
+
+## UDP Ports
+
+The UDP port roles also reverse.
+
+DNS response:
+
+```text
+Source Port      → 53
+Destination Port → 58029
+```
+
+The DNS server sends the response from port `53` back to the temporary port originally selected by the VM.
+
+---
+
+# 🔄 DNS Query vs DNS Response
+
+| | DNS Query | DNS Response |
+|---|---|---|
+| **Source IP** | VM | DNS Server |
+| **Destination IP** | DNS Server | VM |
+| **Source Port** | Random client port | `53` |
+| **Destination Port** | `53` | Client port |
+| **Source MAC** | VM | Default Gateway |
+| **Destination MAC** | Default Gateway | VM |
+
+Example:
+
+```text
+DNS Query
+
+VM
+192.168.8.10
+    |
+    | UDP
+    | Source: 58029
+    | Destination: 53
+    ↓
+DNS Server
+8.8.4.4
+```
+
+Response:
+
+```text
+DNS Server
+8.8.4.4
+    |
+    | UDP
+    | Source: 53
+    | Destination: 58029
+    ↓
+VM
+192.168.8.10
+```
+
+The DNS response contains the resolved IP address information for the requested domain.
+
+---
+
+# 🧠 Important Concepts
+
+## DNS
+
+The **Domain Name System (DNS)** translates human-readable domain names such as:
+
+```text
+www.google.com
+```
+
+into IP addresses.
+
+---
+
+## UDP
+
+DNS commonly uses **UDP** because DNS queries and responses are generally small and do not require the connection setup and overhead associated with TCP.
+
+UDP is:
+
+- Connectionless
+- Low overhead
+- Fast
+- Based on datagrams
+- Without TCP-style three-way handshake
+
+---
+
+## Port 53
+
+DNS uses:
+
+```text
+UDP/53
+```
+
+The client uses a temporary source port and sends the DNS query to destination port `53`.
+
+The DNS server responds from port `53` to the client's temporary port.
+
+---
+
+# 🔐 Cybersecurity Relevance
+
+Wireshark-based DNS analysis is useful for understanding network traffic and identifying how systems communicate with DNS infrastructure.
+
+This lab reinforces:
+
+- **Packet analysis**
+- **Network troubleshooting**
+- **DNS traffic analysis**
+- **UDP analysis**
+- **MAC/IP address relationships**
+- **Source and destination identification**
+- **Port analysis**
+- **Wireshark filtering**
+- **Network-layer encapsulation**
+
+Understanding the difference between **IP addressing** and **MAC addressing** is particularly important during packet analysis.
+
+---
+
+# ❓ Reflection
+
+### What are the benefits of using UDP instead of TCP for DNS?
+
+According to the lab, UDP provides:
+
+- Quick communication
+- Minimal overhead
+- No TCP three-way handshake
+- No requirement for acknowledgments
+- No TCP-style segment reassembly
+- Efficient handling of small DNS messages
+
+This makes UDP suitable for the small DNS queries and responses examined in this lab.
+
+---
+
+# 📝 Key Takeaways
+
+- DNS translates domain names into IP addresses.
+- DNS communication in this lab uses **UDP**.
+- DNS uses **port 53**.
+- The client's source port is dynamically selected.
+- The DNS query destination IP is the DNS server.
+- The query's destination MAC is the local default gateway.
+- The DNS response reverses the source and destination IP roles.
+- The UDP source and destination ports also reverse in the response.
+- Wireshark can expose Ethernet, IP, UDP, and DNS information from captured packets.
+- The destination IP and destination MAC can represent different devices because IP routing and Ethernet delivery operate at different layers.
